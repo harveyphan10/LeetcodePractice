@@ -286,6 +286,74 @@ public class TreeTechnique {
         return max;
     }
 
+    public TreeNode reverseOddLevels(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int level = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            List<TreeNode> revertNodes = new ArrayList<>(size);
+            List<Integer> revertVals = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                TreeNode curNode = q.poll();
+                if (level % 2 == 1) {
+                    revertNodes.add(curNode);
+                    revertVals.add(curNode.val);
+                }
+                if (curNode.left != null) {
+                    q.offer(curNode.left);
+                    q.offer(curNode.right);
+                }
+            }
+            if (!revertNodes.isEmpty()) {
+                for (int i = 0; i < size; i++) {
+                    revertNodes.get(i).val = revertVals.get(size - 1 - i);
+                }
+            }
+            level++;
+        }
+        return root;
+    }
+
+    public int minimumOperations(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int swap = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            int[] vals = new int[size];
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = q.poll();
+                vals[i] = poll.val;
+                if (poll.left != null) {
+                    q.offer(poll.left);
+                }
+                if (poll.right != null) {
+                    q.offer(poll.right);
+                }
+            }
+            PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.comparingInt(a -> a));
+            Map<Integer, Integer> mapIndex = new HashMap<>(size);
+            for (int i = 0; i < size; i++) {
+                heap.offer(vals[i]);
+                mapIndex.put(vals[i], i);
+            }
+            int i = 0;
+            while (!heap.isEmpty()) {
+                int poll = heap.poll();
+                if (poll != vals[i]) {
+                    swap++;
+                    int iSmallest = mapIndex.get(poll);
+                    mapIndex.put(vals[i], iSmallest);
+                    int temp = vals[i];
+                    vals[i] = poll;
+                    vals[iSmallest] = temp;
+                }
+                i++;
+            }
+        }
+        return swap;
+    }
 
     public static void main(String[] args) {
         TreeTechnique treeTechnique = new TreeTechnique();
